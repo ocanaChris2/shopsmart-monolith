@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  product_id    Int      @id @default(autoincrement())
+  product_code String   @unique
+  name         String
+  description  String?
+  price        Float?
+  created_at   DateTime @default(now())
+  priceListDetails PriceListDetail[]
+  salesOrderDetails SalesOrderDetail[]
+  purchaseOrderDetails PurchaseOrderDetail[]
+}
+
+model Customer {
+  customer_id  Int      @id @default(autoincrement())
+  first_name   String
+  last_name    String
+  email        String   @unique
+  phone        String?
+  created_at   DateTime @default(now())
+  salesOrders  SalesOrderHeader[]
+}
+
+model Department {
+  department_id String   @id
+  name          String
+  manager_id    String?
+  employees     Employee[]
+}
+
+model Employee {
+  employee_id    String   @id
+  first_name     String
+  last_name      String
+  email          String   @unique
+  phone_number   String?
+  hire_date      DateTime
+  job_title      String?
+  department_id  String?
+  department     Department? @relation(fields: [department_id], references: [department_id])
+  salesOrders    SalesOrderHeader[]
+}
+
+model Company {
+  company_id Int     @id @default(autoincrement())
+  name       String
+  tax_id     String?
+  address    String?
+  phone      String?
+  email      String?
+  salesOrders SalesOrderHeader[]
+}
+
+model Currency {
+  currency_code String @id
+  name          String
+  symbol        String?
+  priceListDetails PriceListDetail[]
+  salesOrders   SalesOrderHeader[]
+}
+
+model PriceList {
+  price_list_id Int      @id @default(autoincrement())
+  name          String
+  valid_from    DateTime
+  valid_to      DateTime?
+  details       PriceListDetail[]
+}
+
+model PriceListDetail {
+  id            Int      @id @default(autoincrement())
+  price_list_id Int
+  price_list    PriceList @relation(fields: [price_list_id], references: [price_list_id])
+  product_id    Int
+  product       Product  @relation(fields: [product_id], references: [product_id])
+  price         Float
+  currency_code String
+  currency      Currency @relation(fields: [currency_code], references: [currency_code])
+  valid_from    DateTime @default(now())
+  valid_to      DateTime?
+}
+
+model SalesOrderHeader {
+  order_id       Int      @id @default(autoincrement())
+  company_id     Int
+  company        Company  @relation(fields: [company_id], references: [company_id])
+  customer_id    Int
+  customer       Customer @relation(fields: [customer_id], references: [customer_id])
+  employee_id    String?
+  employee       Employee? @relation(fields: [employee_id], references: [employee_id])
+  order_date     DateTime
+  shipped_date   DateTime?
+  status         String
+  total_amount   Float
+  currency_code  String
+  currency       Currency @relation(fields: [currency_code], references: [currency_code])
+  details        SalesOrderDetail[]
+}
+
+model SalesOrderDetail {
+  order_detail_id Int     @id @default(autoincrement())
+  order_id        Int
+  order           SalesOrderHeader @relation(fields: [order_id], references: [order_id])
+  product_id      Int
+  product         Product @relation(fields: [product_id], references: [product_id])
+  quantity        Int
+  price           Float
+  discount        Float   @default(0)
+}
+
+model PurchaseOrderHeader {
+  po_number    String   @id
+  order_date   DateTime
+  total_amount Float
+  status       String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+  details      PurchaseOrderDetail[]
+}
+
+model PurchaseOrderDetail {
+  id          Int     @id @default(autoincrement())
+  po_number   String
+  header      PurchaseOrderHeader @relation(fields: [po_number], references: [po_number])
+  product_code String
+  product     Product @relation(fields: [product_code], references: [product_code])
+  quantity    Int
+  unit_price  Float
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  USER
+}
+
+model User {
+  id                  Int      @id @default(autoincrement())
+  email               String   @unique
+  passwordHash        String
+  role                Role     @default(USER)
+  failedLoginAttempts Int      @default(0)
+  lastFailedLogin     DateTime?
+  accountLockedUntil  DateTime?
+  refreshToken        String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @default(now())
+
+  @@map("users")
+}

@@ -1,0 +1,208 @@
+Migrations directory contents:
+total 8
+drwxrwxr-x    2 root     root          4096 May 30 08:22 .
+drwxrwxr-x    3 root     root          4096 May 22 18:59 ..
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "shopsmart-test", schema "public" at "postgres-test:5432"
+
+🚀  Your database is now in sync with your Prisma schema. Done in 215ms
+
+Running generate... (Use --skip-generate to skip the generators)
+[2K[1A[2K[GRunning generate... - Prisma Client
+[2K[1A[2K[G✔ Generated Prisma Client (v6.8.2) to ./node_modules/.pnpm/@prisma+client@6.8.2
+_prisma@6.8.2_typescript@5.8.3__typescript@5.8.3/node_modules/@prisma/client in 
+195ms
+
+
+ DEV  v3.1.4 /usr/src/app
+
+ ✓ test/services/company.service.test.ts (6 tests) 16ms
+ ✓ test/services/auth.service.test.ts (7 tests) 384ms
+stdout | test/integration/company.integration.test.ts
+Connected to Redis
+
+stdout | test/integration/auth.integration.test.ts
+Connected to Redis
+
+ ❯ test/integration/company.integration.test.ts (9 tests | 9 skipped) 157ms
+   ↓ Company API Integration Tests > Company CRUD Operations > should create a company
+   ↓ Company API Integration Tests > Company CRUD Operations > should get all companies
+   ↓ Company API Integration Tests > Company CRUD Operations > should get a company by ID
+   ↓ Company API Integration Tests > Company CRUD Operations > should update a company
+   ↓ Company API Integration Tests > Company CRUD Operations > should delete a company
+   ↓ Company API Integration Tests > Company Validation > should reject invalid company data
+   ↓ Company API Integration Tests > Company Validation > should return 404 for non-existent company
+   ↓ Company API Integration Tests > Company Authentication > should reject unauthenticated requests
+   ↓ Company API Integration Tests > Company Authentication > should reject requests with invalid token
+stdout | test/integration/auth.integration.test.ts > Auth API Integration Tests > Token Refresh > should refresh access token
+Received refresh token: 
+Request cookies: [90mundefined[39m
+Request headers: {
+  host: [32m'127.0.0.1:39947'[39m,
+  [32m'accept-encoding'[39m: [32m'gzip, deflate'[39m,
+  cookie: [32m'refreshToken='[39m,
+  connection: [32m'close'[39m,
+  [32m'content-length'[39m: [32m'0'[39m
+}
+
+stdout | test/integration/auth.integration.test.ts > Auth API Integration Tests > Token Refresh > should reject refresh with invalid token
+Received refresh token: invalid
+Request cookies: [90mundefined[39m
+Request headers: {
+  host: [32m'127.0.0.1:33635'[39m,
+  [32m'accept-encoding'[39m: [32m'gzip, deflate'[39m,
+  cookie: [32m'refreshToken=invalid'[39m,
+  connection: [32m'close'[39m,
+  [32m'content-length'[39m: [32m'0'[39m
+}
+Current NODE_ENV: test
+Running in test environment
+
+stdout | test/integration/auth.integration.test.ts > Auth API Integration Tests > Logout > should logout successfully
+Received refresh token: 
+Request cookies: [90mundefined[39m
+Request headers: {
+  host: [32m'127.0.0.1:43055'[39m,
+  [32m'accept-encoding'[39m: [32m'gzip, deflate'[39m,
+  cookie: [32m'refreshToken='[39m,
+  connection: [32m'close'[39m,
+  [32m'content-length'[39m: [32m'0'[39m
+}
+
+ ❯ test/integration/auth.integration.test.ts (12 tests | 12 failed) 655ms
+   × Auth API Integration Tests > Registration > should register a new user 182ms
+     → expected 201 "Created", got 500 "Internal Server Error"
+     → 
+Invalid `prisma.user.deleteMany()` invocation in
+/usr/src/app/test/integration/auth.integration.test.ts:25:23
+
+  22 
+  23 afterEach(async () => {
+  24   // Clean up after each test using Prisma
+→ 25   await prisma.user.deleteMany(
+The table `public.User` does not exist in the current database.
+   × Auth API Integration Tests > Registration > should reject duplicate email 17ms
+     → expected 201 "Created", got 500 "Internal Server Error"
+     → 
+Invalid `prisma.user.deleteMany()` invocation in
+/usr/src/app/test/integration/auth.integration.test.ts:25:23
+
+  22 
+  23 afterEach(async () => {
+  24   // Clean up after each test using Prisma
+→ 25   await prisma.user.deleteMany(
+The table `public.User` does not exist in the current database.
+   × Auth API Integration Tests > Registration > should reject weak password 12ms
+     → 
+Invalid `prisma.user.deleteMany()` invocation in
+/usr/src/app/test/integration/auth.integration.test.ts:25:23
+
+  22 
+  23 afterEach(async () => {
+  24   // Clean up after each test using Prisma
+→ 25   await prisma.user.deleteMany(
+The table `public.User` does not exist in the current database.
+   × Auth API Integration Tests > Login > should login with valid credentials 32ms
+     → expected 200 "OK", got 500 "Internal Server Error"
+     → 
+Invalid `prisma.user.deleteMany()` invocation in
+/usr/src/app/test/integration/auth.integration.test.ts:25:23
+
+  22 
+  23 afterEach(async () => {
+  24   // Clean up after each test using Prisma
+→ 25   await prisma.user.deleteMany(
+The table `public.User` does not exist in the current database.
+   × Auth API Integration Tests > Login > should reject invalid credentials 25ms
+     → expected 401 "Unauthorized", got 500 "Internal Server Error"
+     → 
+Invalid `prisma.user.deleteMany()` invocation in
+/usr/src/app/test/integration/auth.integration.test.ts:25:23
+
+  22 
+  23 afterEach(async () => {
+  24   // Clean up after each test using Prisma
+→ 25   await prisma.user.deleteMany(
+The table `public.User` does not exist in the current database.
+   × Auth API Integration Tests > Login > should lock account after multiple failed attempts 75ms
+     → expected 403 "Forbidden", got 500 "Internal Server Error"
+     → 
+Invalid `prisma.user.deleteMany()` invocation in
+/usr/src/app/test/integration/auth.integration.test.ts:25:23
+
+  22 
+  23 afterEach(async () => {
+  24   // Clean up after each test using Prisma
+→ 25   await prisma.user.deleteMany(
+The table `public.User` does not exist in the current database.
+   × Auth API Integration Tests > Protected Routes > should access protected route with valid token 30ms
+     → expected 200 "OK", got 401 "Unauthorized"
+     → 
+Invalid `prisma.user.deleteMany()` invocation in
+/usr/src/app/test/integration/auth.integration.test.ts:25:23
+
+  22 
+  23 afterEach(async () => {
+  24   // Clean up after each test using Prisma
+→ 25   await prisma.user.deleteMany(
+The table `public.User` does not exist in the current database.
+   × Auth API Integration Tests > Protected Routes > should reject protected route without token 35ms
+     → 
+Invalid `prisma.user.deleteMany()` invocation in
+/usr/src/app/test/integration/auth.integration.test.ts:25:23
+
+  22 
+  23 afterEach(async () => {
+  24   // Clean up after each test using Prisma
+→ 25   await prisma.user.deleteMany(
+The table `public.User` does not exist in the current database.
+   × Auth API Integration Tests > Protected Routes > should reject protected route with invalid token 26ms
+     → 
+Invalid `prisma.user.deleteMany()` invocation in
+/usr/src/app/test/integration/auth.integration.test.ts:25:23
+
+  22 
+  23 afterEach(async () => {
+  24   // Clean up after each test using Prisma
+→ 25   await prisma.user.deleteMany(
+The table `public.User` does not exist in the current database.
+   × Auth API Integration Tests > Token Refresh > should refresh access token 23ms
+     → expected 200 "OK", got 401 "Unauthorized"
+     → 
+Invalid `prisma.user.deleteMany()` invocation in
+/usr/src/app/test/integration/auth.integration.test.ts:25:23
+
+  22 
+  23 afterEach(async () => {
+  24   // Clean up after each test using Prisma
+→ 25   await prisma.user.deleteMany(
+The table `public.User` does not exist in the current database.
+   × Auth API Integration Tests > Token Refresh > should reject refresh with invalid token 22ms
+     → 
+Invalid `prisma.user.deleteMany()` invocation in
+/usr/src/app/test/integration/auth.integration.test.ts:25:23
+
+  22 
+  23 afterEach(async () => {
+  24   // Clean up after each test using Prisma
+→ 25   await prisma.user.deleteMany(
+The table `public.User` does not exist in the current database.
+   × Auth API Integration Tests > Logout > should logout successfully 24ms
+     → expected 200 "OK", got 401 "Unauthorized"
+     → 
+Invalid `prisma.user.deleteMany()` invocation in
+/usr/src/app/test/integration/auth.integration.test.ts:25:23
+
+  22 
+  23 afterEach(async () => {
+  24   // Clean up after each test using Prisma
+→ 25   await prisma.user.deleteMany(
+The table `public.User` does not exist in the current database.
+
+ Test Files  2 failed | 2 passed (4)
+      Tests  12 failed | 13 passed | 9 skipped (34)
+   Start at  16:11:51
+   Duration  2.13s (transform 742ms, setup 0ms, collect 2.59s, tests 1.21s, environment 1ms, prepare 450ms)
+
+ FAIL  Tests failed. Watching for file changes...
+       press h to show help, press q to quit

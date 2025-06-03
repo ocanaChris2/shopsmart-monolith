@@ -1,0 +1,19 @@
+
+> shopsmart-monolitic@1.0.0 start /home/christian/Desktop/shopsmart-monolitic
+> ts-node src/server.ts
+
+/home/christian/Desktop/shopsmart-monolitic/node_modules/.pnpm/@fastify+csrf-protection@7.1.0/node_modules/@fastify/csrf-protection/index.js:45
+  if (opts.getUserInfo) {
+           ^
+TypeError: Cannot read properties of undefined (reading 'getUserInfo')
+    at fastifyCsrfProtection (/home/christian/Desktop/shopsmart-monolitic/node_modules/.pnpm/@fastify+csrf-protection@7.1.0/node_modules/@fastify/csrf-protection/index.js:45:12)
+    at Object.<anonymous> (/home/christian/Desktop/shopsmart-monolitic/src/server.ts:12:45)
+    at Module._compile (node:internal/modules/cjs/loader:1723:14)
+    at Module.m._compile (/home/christian/Desktop/shopsmart-monolitic/node_modules/.pnpm/ts-node@10.9.2_@types+node@22.15.21_typescript@5.8.3/node_modules/ts-node/src/index.ts:1618:23)
+    at loadTS (node:internal/modules/cjs/loader:1815:10)
+    at Object.require.extensions.<computed> [as .ts] (/home/christian/Desktop/shopsmart-monolitic/node_modules/.pnpm/ts-node@10.9.2_@types+node@22.15.21_typescript@5.8.3/node_modules/ts-node/src/index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1458:32)
+    at Function._load (node:internal/modules/cjs/loader:1275:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:234:24)
+ ELIFECYCLE  Command failed with exit code 1.
