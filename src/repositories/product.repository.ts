@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import Redis from 'ioredis';
+import { stringifyWithDates, parseWithDates } from '../utils/dateUtils';
 
 const prisma = new PrismaClient();
 const redis = new Redis({
@@ -17,10 +18,10 @@ export const getAllProducts = async () => {
   const cacheKey = getCacheKey('all', '');
   try {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+    if (cached) return parseWithDates(cached);
     
     const products = await prisma.product.findMany();
-    await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(products));
+    await redis.setex(cacheKey, CACHE_TTL, stringifyWithDates(products));
     return products;
   } catch (err) {
     console.error('Redis error, falling back to DB', err);
@@ -32,13 +33,13 @@ export const getProductById = async (id: number) => {
   const cacheKey = getCacheKey('id', id);
   try {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+    if (cached) return parseWithDates(cached);
     
     const product = await prisma.product.findUnique({
       where: { product_id: id }
     });
     if (product) {
-      await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(product));
+      await redis.setex(cacheKey, CACHE_TTL, stringifyWithDates(product));
     }
     return product;
   } catch (err) {
@@ -53,13 +54,13 @@ export const getProductByCode = async (code: string) => {
   const cacheKey = getCacheKey('code', code);
   try {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+    if (cached) return parseWithDates(cached);
     
     const product = await prisma.product.findUnique({
       where: { product_code: code }
     });
     if (product) {
-      await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(product));
+      await redis.setex(cacheKey, CACHE_TTL, stringifyWithDates(product));
     }
     return product;
   } catch (err) {

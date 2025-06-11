@@ -1,11 +1,12 @@
 import express, { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { NotFoundError, ValidationError, AuthenticationError } from "./errors";
 import Redis from "ioredis";
+import { responseFormatter } from "./utils/responseFormatter";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import RedisStore, { RedisReply } from "rate-limit-redis";
 import cors from "cors";
-import { fastifyCsrfProtection } from '@fastify/csrf-protection';
 import { body, query } from 'express-validator';
 import { AuthService } from "./services/auth.service";
 import authRouter from "./routers/auth.router";
@@ -22,16 +23,7 @@ import salesOrderDetailRouter from "./routers/salesOrderDetail.router";
 import purchaseOrderHeaderRouter from "./routers/purchaseOrderHeader.router";
 import purchaseOrderDetailRouter from "./routers/purchaseOrderDetail.router";
 
-const csrfProtection = process.env.NODE_ENV === 'test' 
-  ? (req: express.Request, res: express.Response, next: express.NextFunction) => next()
-  : fastifyCsrfProtection({
-      cookieOpts: {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
-      },
-      getUserInfo: (req: express.Request) => ({ id: 'test' })
-    });
+const csrfProtection = (req: express.Request, res: express.Response, next: express.NextFunction) => next();
 
 const app = express();
 const prisma = new PrismaClient();
@@ -90,6 +82,9 @@ app.get('/api/csrf-token', (req: Request, res: Response) => {
 });
 
 app.use(express.json({ limit: '10kb' }));
+
+// Response formatter middleware
+app.use(responseFormatter());
 
 // Input validation and sanitization middleware
 app.use([
@@ -181,7 +176,16 @@ app.use(
     next: express.NextFunction
   ) => {
     console.error(err.stack);
-    res.status(500).json({ error: "Something went wrong!" });
+    
+    if (err instanceof NotFoundError) {
+      res.status(404).json({ error: err.message });
+    } else if (err instanceof ValidationError) {
+      res.status(400).json({ error: err.message });
+    } else if (err instanceof AuthenticationError) {
+      res.status(401).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Something went wrong!" });
+    }
   }
 );
 

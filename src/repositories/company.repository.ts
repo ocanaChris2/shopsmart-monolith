@@ -3,12 +3,14 @@ import Redis from 'ioredis';
 
 const prisma = new PrismaClient();
 
-// Helper to revive Date objects from JSON strings
+import { parseWithDates, stringifyWithDates } from '../utils/dateUtils';
+
+// Replace custom date reviver with standardized utils
 const dateReviver = (key: string, value: any) => {
-  const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
-  return typeof value === 'string' && dateFormat.test(value) 
-    ? new Date(value) 
-    : value;
+  if (value?.__type === 'Date') {
+    return new Date(value.value);
+  }
+  return value;
 };
 export const redis = new Redis({
   host: process.env.REDIS_HOST || 'redis',
@@ -25,11 +27,11 @@ export const getAllCompanies = async (tx?: any) => {
   const cacheKey = getCacheKey('all', '');
   try {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached, dateReviver);
+    if (cached) return parseWithDates(cached);
     
     const db = tx || prisma;
     const companies = await db.company.findMany();
-    await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(companies));
+    await redis.setex(cacheKey, CACHE_TTL, stringifyWithDates(companies));
     return companies;
   } catch (err) {
     console.error('Redis error, falling back to DB', err);
@@ -42,17 +44,14 @@ export const getCompanyById = async (id: number, tx?: any) => {
   const cacheKey = getCacheKey('id', id);
   try {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached, dateReviver);
+    if (cached) return parseWithDates(cached);
     
     const db = tx || prisma;
     const company = await db.company.findUnique({
       where: { company_id: id }
     });
     if (company) {
-      await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(company));
-    } else {
-      // Explicitly handle not found case
-      throw new Error('Company not found');
+      await redis.setex(cacheKey, CACHE_TTL, stringifyWithDates(company));
     }
     return company;
   } catch (err) {
@@ -66,10 +65,6 @@ export const getCompanyById = async (id: number, tx?: any) => {
     const company = await db.company.findUnique({
       where: { company_id: id }
     });
-    
-    if (!company) {
-      throw new Error('Company not found');
-    }
     
     return company;
   }

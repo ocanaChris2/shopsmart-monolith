@@ -101,7 +101,7 @@ const cleanupRedis = async () => {
 
 describe('Auth API Integration Tests', () => {
   const testUser = {
-    email: 'test@example.com',
+    email: 'auth-test@example.com', // Unique email for this test file
     password: 'ValidPass123!'
   };
   let testPrisma: PrismaClient;

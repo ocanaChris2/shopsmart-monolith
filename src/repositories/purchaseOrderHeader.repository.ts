@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import Redis from 'ioredis';
+import { stringifyWithDates, parseWithDates } from '../utils/dateUtils';
 
 const prisma = new PrismaClient();
 const redis = new Redis({
@@ -17,7 +18,7 @@ export const getAllPurchaseOrderHeaders = async () => {
   const cacheKey = getCacheKey('all', '');
   try {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+    if (cached) return parseWithDates(cached);
     
     const orders = await prisma.purchaseOrderHeader.findMany({
       include: {
@@ -28,7 +29,7 @@ export const getAllPurchaseOrderHeaders = async () => {
         }
       }
     });
-    await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(orders));
+    await redis.setex(cacheKey, CACHE_TTL, stringifyWithDates(orders));
     return orders;
   } catch (err) {
     console.error('Redis error, falling back to DB', err);
@@ -48,7 +49,7 @@ export const getPurchaseOrderHeaderById = async (po_number: string) => {
   const cacheKey = getCacheKey('byId', po_number);
   try {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+    if (cached) return parseWithDates(cached);
     
     const order = await prisma.purchaseOrderHeader.findUnique({
       where: { po_number },
@@ -61,7 +62,7 @@ export const getPurchaseOrderHeaderById = async (po_number: string) => {
       }
     });
     if (order) {
-      await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(order));
+      await redis.setex(cacheKey, CACHE_TTL, stringifyWithDates(order));
     }
     return order;
   } catch (err) {

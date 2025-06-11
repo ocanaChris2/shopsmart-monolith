@@ -64,7 +64,7 @@ describe('CompanyController', () => {
       vi.mocked(companyService.getAllCompanies).mockRejectedValue(new Error('DB error'))
       await companyController.getAll(req, res)
       expect(res.status).toHaveBeenCalledWith(500)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Failed to fetch items' })
+      expect(res.json).toHaveBeenCalledWith({ error: 'Failed to fetch companies' })
     })
   })
 

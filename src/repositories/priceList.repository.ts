@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import Redis from 'ioredis';
+import { stringifyWithDates, parseWithDates } from '../utils/dateUtils';
 
 const prisma = new PrismaClient();
 const redis = new Redis({
@@ -17,12 +18,12 @@ export const getAllPriceLists = async () => {
   const cacheKey = getCacheKey('all', '');
   try {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+    if (cached) return parseWithDates(cached);
     
     const priceLists = await prisma.priceList.findMany({
       include: { details: true }
     });
-    await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(priceLists));
+    await redis.setex(cacheKey, CACHE_TTL, stringifyWithDates(priceLists));
     return priceLists;
   } catch (err) {
     console.error('Redis error, falling back to DB', err);
@@ -36,14 +37,14 @@ export const getPriceListById = async (id: number) => {
   const cacheKey = getCacheKey('id', id);
   try {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+    if (cached) return parseWithDates(cached);
     
     const priceList = await prisma.priceList.findUnique({
       where: { price_list_id: id },
       include: { details: true }
     });
     if (priceList) {
-      await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(priceList));
+      await redis.setex(cacheKey, CACHE_TTL, stringifyWithDates(priceList));
     }
     return priceList;
   } catch (err) {

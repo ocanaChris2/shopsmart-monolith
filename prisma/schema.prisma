@@ -35,8 +35,13 @@ model Customer {
 model Department {
   department_id String   @id
   name          String
+  description   String?
   manager_id    String?
   employees     Employee[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+
+  @@map("Department")
 }
 
 model Employee {
@@ -46,6 +51,8 @@ model Employee {
   email          String   @unique
   phone_number   String?
   hire_date      DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
   job_title      String?
   department_id  String?
   department     Department? @relation(fields: [department_id], references: [department_id])
@@ -59,6 +66,8 @@ model Company {
   address    String?
   phone      String?
   email      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
   salesOrders SalesOrderHeader[]
 }
 

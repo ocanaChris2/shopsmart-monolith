@@ -29,11 +29,7 @@ const validateCompanyId = (id: string | number): number => {
 
 export const getCompany = async (id: string | number) => {
   const companyId = validateCompanyId(id);
-  const company = await getCompanyByIdRepo(companyId);
-  if (!company) {
-    throw new Error('Company not found');
-  }
-  return company;
+  return await getCompanyByIdRepo(companyId);
 };
 
 export const createCompany = async (data: unknown) => {

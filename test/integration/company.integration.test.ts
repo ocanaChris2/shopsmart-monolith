@@ -10,7 +10,7 @@ let transaction: any;
 
 describe('Company API Integration Tests', () => {
   const testUser = {
-    email: 'test@example.com',
+    email: 'company-test@example.com', // Unique email for this test file
     password: 'ValidPass123!'
   };
 
@@ -98,6 +98,9 @@ describe('Company API Integration Tests', () => {
         
         expect(response.body).toHaveProperty('company_id');
         expect(response.body.name).toBe('Test Company');
+        // Verify createdAt is a valid ISO date string
+        expect(typeof response.body.createdAt).toBe('string');
+        expect(new Date(response.body.createdAt)).toBeInstanceOf(Date);
 
         // Verify database state
         const company = await tx.company.findUnique({
@@ -108,29 +111,30 @@ describe('Company API Integration Tests', () => {
     });
 
     it('should get all companies', async () => {
-      await prisma.$transaction(async (tx) => {
-        // First create a company
-        await request(app)
-          .post('/api/companies')
-          .set('Authorization', `Bearer ${accessToken}`)
-          .send({
-            name: 'Test Company',
-            address: '123 Test St',
-            phone: '555-1234'
-          });
+      // First create a company
+      await request(app)
+        .post('/api/companies')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          name: 'Test Company',
+          address: '123 Test St',
+          phone: '555-1234'
+        });
 
-        const response = await request(app)
-          .get('/api/companies')
-          .set('Authorization', `Bearer ${accessToken}`)
-          .expect(200);
-        
-        expect(response.body).toBeInstanceOf(Array);
-        expect(response.body[0].name).toBe('Test Company');
+      const response = await request(app)
+        .get('/api/companies')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200);
+      
+      expect(response.body).toBeInstanceOf(Array);
+      expect(response.body[0].name).toBe('Test Company');
+      // Verify dates are valid ISO date strings
+      expect(typeof response.body[0].createdAt).toBe('string');
+      expect(new Date(response.body[0].createdAt)).toBeInstanceOf(Date);
 
-        // Verify database state
-        const companies = await tx.company.findMany();
-        expect(companies.length).toBe(1);
-      });
+      // Verify database state
+      const companies = await prisma.company.findMany();
+      expect(companies.length).toBe(1);
     });
 
     it('should get a company by ID', async () => {
@@ -151,6 +155,9 @@ describe('Company API Integration Tests', () => {
           .expect(200);
         
         expect(response.body.company_id).toBe(createRes.body.company_id);
+        // Verify createdAt is a valid ISO date string
+        expect(typeof response.body.createdAt).toBe('string');
+        expect(new Date(response.body.createdAt)).toBeInstanceOf(Date);
 
         // Verify database state
         const company = await tx.company.findUnique({
@@ -181,6 +188,9 @@ describe('Company API Integration Tests', () => {
           .expect(200);
         
         expect(response.body.name).toBe('Updated Company');
+        // Verify updatedAt is a valid ISO date string
+        expect(typeof response.body.updatedAt).toBe('string');
+        expect(new Date(response.body.updatedAt)).toBeInstanceOf(Date);
 
         // Verify database state
         const updatedCompany = await tx.company.findUnique({

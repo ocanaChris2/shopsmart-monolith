@@ -13,11 +13,18 @@ function getCacheKey(method: string, identifier: string | number): string {
   return `customer:${method}:${identifier}`;
 }
 
+const dateReviver = (key: string, value: any) => {
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(value)) {
+    return new Date(value);
+  }
+  return value;
+};
+
 export const getAllCustomers = async () => {
   const cacheKey = getCacheKey('all', '');
   try {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+    if (cached) return JSON.parse(cached, dateReviver);
     
     const customers = await prisma.customer.findMany();
     await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(customers));
@@ -32,7 +39,7 @@ export const getCustomerById = async (id: number) => {
   const cacheKey = getCacheKey('id', id);
   try {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+    if (cached) return JSON.parse(cached, dateReviver);
     
     const customer = await prisma.customer.findUnique({
       where: { customer_id: id }

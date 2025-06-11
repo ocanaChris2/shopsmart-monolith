@@ -52,7 +52,11 @@ describe('CompanyRepository', () => {
 
   describe('Cache Operations', () => {
     it('should return cached companies when available', async () => {
-      vi.mocked(redis.get).mockResolvedValue(JSON.stringify([mockCompany]))
+      vi.mocked(redis.get).mockResolvedValue(JSON.stringify([{
+        ...mockCompany,
+        createdAt: { __type: 'Date', value: mockCompany.createdAt.toISOString() },
+        updatedAt: { __type: 'Date', value: mockCompany.updatedAt.toISOString() }
+      }]))
       const result = await CompanyRepository.getAllCompanies()
       expect(result).toEqual([mockCompany])
       expect(prisma.company.findMany).not.toHaveBeenCalled()

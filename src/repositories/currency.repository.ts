@@ -1,6 +1,14 @@
 import { PrismaClient } from '@prisma/client';
 import Redis from 'ioredis';
 
+function jsonDateReviver(key: string, value: any) {
+  const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+  if (typeof value === 'string' && dateFormat.test(value)) {
+    return new Date(value);
+  }
+  return value;
+}
+
 const prisma = new PrismaClient();
 const redis = new Redis({
   host: process.env.REDIS_HOST || 'redis',
@@ -17,7 +25,7 @@ export const getAllCurrencies = async () => {
   const cacheKey = getCacheKey('all', '');
   try {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+    if (cached) return JSON.parse(cached, jsonDateReviver);
     
     const currencies = await prisma.currency.findMany();
     await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(currencies));
@@ -32,7 +40,7 @@ export const getCurrencyByCode = async (code: string) => {
   const cacheKey = getCacheKey('code', code);
   try {
     const cached = await redis.get(cacheKey);
-    if (cached) return JSON.parse(cached);
+    if (cached) return JSON.parse(cached, jsonDateReviver);
     
     const currency = await prisma.currency.findUnique({
       where: { currency_code: code }

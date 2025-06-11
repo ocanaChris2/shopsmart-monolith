@@ -275,10 +275,26 @@ export const AuthService = {
   },
 
   async saveRefreshToken(userId: number, token: string): Promise<void> {
-    await prisma.user.update({
-      where: { id: userId },
-      data: { refreshToken: token }
-    });
+    try {
+      // First check if user exists
+      const user = await prisma.user.findUnique({
+        where: { id: userId }
+      });
+
+      if (!user) {
+        console.warn(`Attempted to save refresh token for non-existent user ID ${userId}`);
+        return;
+      }
+
+      // Then update refresh token
+      await prisma.user.update({
+        where: { id: userId },
+        data: { refreshToken: token }
+      });
+    } catch (error) {
+      console.error(`Failed to save refresh token for user ${userId}:`, error);
+      throw error; // Re-throw to let caller handle it
+    }
   },
 
   async clearRefreshToken(userId: number, token: string): Promise<void> {
