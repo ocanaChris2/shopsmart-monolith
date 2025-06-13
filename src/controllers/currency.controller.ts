@@ -1,59 +1,60 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import * as currencyService from '../services/currency.service';
 import { Currency } from '@prisma/client';
+import { z } from 'zod';
+import { NotFoundError, ValidationError } from '../errors';
 
 class CurrencyController {
-  async getAll(req: Request, res: Response) {
+  async getAll(req: Request, res: Response, next: NextFunction) {
     try {
       const currencies = await currencyService.getAllCurrencies();
       res.json(currencies);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch currencies' });
+      next(error);
     }
   }
 
-  async getById(req: Request, res: Response) {
+  async getById(req: Request, res: Response, next: NextFunction) {
     try {
       const currency = await currencyService.getCurrency(req.params.id);
-      if (!currency) {
-        return res.status(404).json({ error: 'Currency not found' });
-      }
       res.json(currency);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch currency' });
+      next(error);
     }
   }
 
-  async create(req: Request, res: Response) {
+  async create(req: Request, res: Response, next: NextFunction) {
     try {
       const currency = await currencyService.createCurrency(req.body);
       res.status(201).json(currency);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to create currency' });
+      if (error instanceof z.ZodError) {
+        next(new ValidationError('Validation failed', error.errors));
+      } else {
+        next(error);
+      }
     }
   }
 
-  async update(req: Request, res: Response) {
+  async update(req: Request, res: Response, next: NextFunction) {
     try {
       const currency = await currencyService.updateCurrency(req.params.id, req.body);
-      if (!currency) {
-        return res.status(404).json({ error: 'Currency not found' });
-      }
       res.json(currency);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to update currency' });
+      if (error instanceof z.ZodError) {
+        next(new ValidationError('Validation failed', error.errors));
+      } else {
+        next(error);
+      }
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const currency = await currencyService.deleteCurrency(req.params.id);
-      if (!currency) {
-        return res.status(404).json({ error: 'Currency not found' });
-      }
+      await currencyService.deleteCurrency(req.params.id);
       res.status(204).send();
     } catch (error) {
-      res.status(500).json({ error: 'Failed to delete currency' });
+      next(error);
     }
   }
 }

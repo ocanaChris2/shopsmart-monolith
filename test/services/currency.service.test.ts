@@ -6,6 +6,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import * as CurrencyService from '../../src/services/currency.service'
 import * as CurrencyRepository from '../../src/repositories/currency.repository'
 import { z } from 'zod'
+import { NotFoundError } from '../../src/errors'
 
 // Mock repository functions
 vi.mock('../../src/repositories/currency.repository', () => ({
@@ -64,7 +65,7 @@ describe('CurrencyService', () => {
     })
 
     it('should throw for non-existent currency', async () => {
-      vi.mocked(CurrencyRepository.getCurrencyByCode).mockResolvedValue(null)
+      vi.mocked(CurrencyRepository.getCurrencyByCode).mockRejectedValue(new NotFoundError('Currency not found'))
       await expect(CurrencyService.getCurrency('XXX')).rejects.toThrow('Currency not found')
     })
   })
@@ -104,7 +105,7 @@ describe('CurrencyService', () => {
     })
 
     it('should throw for non-existent currency', async () => {
-      vi.mocked(CurrencyRepository.getCurrencyByCode).mockResolvedValue(null)
+      vi.mocked(CurrencyRepository.getCurrencyByCode).mockRejectedValue(new NotFoundError('Currency not found'))
       await expect(CurrencyService.updateCurrency('XXX', {
         name: 'Updated'
       })).rejects.toThrow('Currency not found')
@@ -119,7 +120,7 @@ describe('CurrencyService', () => {
     })
 
     it('should throw for non-existent currency', async () => {
-      vi.mocked(CurrencyRepository.getCurrencyByCode).mockResolvedValue(null)
+      vi.mocked(CurrencyRepository.getCurrencyByCode).mockRejectedValue(new NotFoundError('Currency not found'))
       await expect(CurrencyService.deleteCurrency('XXX')).rejects.toThrow('Currency not found')
     })
   })

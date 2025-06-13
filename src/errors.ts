@@ -6,8 +6,8 @@ export class NotFoundError extends Error {
 }
 
 export class ValidationError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(message: string, details?: any) {
+    super(details ? `${message}: ${JSON.stringify(details)}` : message);
     this.name = 'ValidationError';
   }
 }

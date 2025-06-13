@@ -20,6 +20,6 @@ export default defineConfig({
     
     watch: false,
     passWithNoTests: true,
-    reporter: 'verbose'
+    reporters: ['verbose']
   }
 })

@@ -155,16 +155,24 @@ enum Role {
 }
 
 model User {
-  id                  Int      @id @default(autoincrement())
-  email               String   @unique
+  id                  Int               @id @default(autoincrement())
+  email               String            @unique
   passwordHash        String
-  role                Role     @default(USER)
-  failedLoginAttempts Int      @default(0)
+  role                Role              @default(USER)
+  stripeCustomerId    String?           @unique
+  subscriptionStatus  SubscriptionStatus?
+  failedLoginAttempts Int               @default(0)
   lastFailedLogin     DateTime?
   accountLockedUntil  DateTime?
   refreshToken        String?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @default(now())
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @default(now())
 
   @@map("users")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
 }

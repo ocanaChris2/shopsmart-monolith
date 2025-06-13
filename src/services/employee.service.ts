@@ -63,11 +63,15 @@ export const createEmployee = async (data: unknown) => {
 
 export const updateEmployee = async (id: string | number, data: unknown) => {
   const employeeId = typeof id === 'number' ? id.toString() : id;
+  await getEmployee(employeeId); // Verify employee exists first
   try {
     const validatedData = employeeUpdateSchema.parse(data);
     return await updateEmployeeRepo(employeeId, validatedData);
   } catch (error) {
     if (error instanceof NotFoundError) {
+      throw error;
+    }
+    if (error instanceof z.ZodError) {
       throw error;
     }
     throw new Error('Failed to update employee');

@@ -56,6 +56,9 @@ importers:
       redis:
         specifier: ^5.1.1
         version: 5.1.1
+      stripe:
+        specifier: ^14.0.0
+        version: 14.25.0
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.15.29)(typescript@5.8.3)
@@ -1213,6 +1216,10 @@ packages:
 
   std-env@3.9.0:
     resolution: {integrity: sha512-UGvjygr6F6tpH7o2qyqR6QYpwraIjKSdtzyBdyytFOHmPZY917kwdwLG0RbOjWOnKmnm3PeHjaoLLMie7kPLQw==}
+
+  stripe@14.25.0:
+    resolution: {integrity: sha512-wQS3GNMofCXwH8TSje8E1SE8zr6ODiGtHQgPtO95p9Mb4FhKC9jvXR2NUTpZ9ZINlckJcFidCmaTFV4P6vsb9g==}
+    engines: {node: '>=12.*'}
 
   superagent@10.2.1:
     resolution: {integrity: sha512-O+PCv11lgTNJUzy49teNAWLjBZfc+A1enOwTpLlH6/rsvKcTwcdTT8m9azGkVqM7HBl5jpyZ7KTPhHweokBcdg==}
@@ -2461,6 +2468,11 @@ snapshots:
   statuses@2.0.1: {}
 
   std-env@3.9.0: {}
+
+  stripe@14.25.0:
+    dependencies:
+      '@types/node': 22.15.29
+      qs: 6.14.0
 
   superagent@10.2.1:
     dependencies:
